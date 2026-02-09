@@ -1,0 +1,11 @@
+taxi_transforms:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJECT') }}"
+      keyfile: ../keys/my_keys.json
+      dataset: taxi_staging
+      location: us-central1
+      threads: 4
