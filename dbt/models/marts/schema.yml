@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: fct_taxi_features
+    description: "ML-ready feature table for fare prediction"
+    columns:
+      - name: pickup_hour
+        tests:
+          - not_null
+      - name: pickup_dayofweek
+        tests:
+          - not_null
+      - name: is_weekend
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      - name: passenger_count
+        tests:
+          - not_null
+      - name: trip_distance
+        tests:
+          - not_null
+      - name: fare_amount
+        tests:
+          - not_null

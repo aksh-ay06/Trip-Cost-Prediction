@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: taxi_staging
+    database: "{{ env_var('GCP_PROJECT') }}"
+    schema: taxi_staging
+    tables:
+      - name: yellow_trips_processed
+
+models:
+  - name: stg_taxi_trips
+    description: "Staged taxi trip data from Spark feature engineering output"
+    columns:
+      - name: fare_amount
+        tests:
+          - not_null
+      - name: trip_distance
+        tests:
+          - not_null
+      - name: passenger_count
+        tests:
+          - not_null
+      - name: pickup_hour
+        tests:
+          - not_null
+      - name: pickup_dayofweek
+        tests:
+          - not_null

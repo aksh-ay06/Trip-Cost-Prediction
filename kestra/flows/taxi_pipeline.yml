@@ -1,0 +1,73 @@
+id: taxi_pipeline
+namespace: mlops
+
+variables:
+  gcp_project: prefab-fabric-479602-c5
+  docker_image: mlops-pipeline:latest
+  keys_volume: "/media/akshay/DATA/MLops/keys:/app/keys:ro"
+
+tasks:
+  - id: extract_data
+    type: io.kestra.plugin.scripts.shell.Commands
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: "{{ vars.docker_image }}"
+      volumes:
+        - "{{ vars.keys_volume }}"
+    env:
+      GCP_PROJECT: "{{ vars.gcp_project }}"
+      GOOGLE_APPLICATION_CREDENTIALS: /app/keys/my_keys.json
+    commands:
+      - python -m src.data.extract
+
+  - id: load_to_bq
+    type: io.kestra.plugin.scripts.shell.Commands
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: "{{ vars.docker_image }}"
+      volumes:
+        - "{{ vars.keys_volume }}"
+    env:
+      GCP_PROJECT: "{{ vars.gcp_project }}"
+      GOOGLE_APPLICATION_CREDENTIALS: /app/keys/my_keys.json
+    commands:
+      - python -m src.data.load_to_bq
+
+  - id: feature_engineering
+    type: io.kestra.plugin.scripts.shell.Commands
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: "{{ vars.docker_image }}"
+      volumes:
+        - "{{ vars.keys_volume }}"
+    env:
+      GCP_PROJECT: "{{ vars.gcp_project }}"
+      GOOGLE_APPLICATION_CREDENTIALS: /app/keys/my_keys.json
+    commands:
+      - python -m src.processing.spark_job
+
+  - id: dbt_run
+    type: io.kestra.plugin.scripts.shell.Commands
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: "{{ vars.docker_image }}"
+      volumes:
+        - "{{ vars.keys_volume }}"
+    env:
+      GCP_PROJECT: "{{ vars.gcp_project }}"
+      GOOGLE_APPLICATION_CREDENTIALS: /app/keys/my_keys.json
+    commands:
+      - cd /app/dbt && dbt deps --profiles-dir . && dbt run --profiles-dir .
+
+  - id: train_model
+    type: io.kestra.plugin.scripts.shell.Commands
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: "{{ vars.docker_image }}"
+      volumes:
+        - "{{ vars.keys_volume }}"
+    env:
+      GCP_PROJECT: "{{ vars.gcp_project }}"
+      GOOGLE_APPLICATION_CREDENTIALS: /app/keys/my_keys.json
+    commands:
+      - python -m src.training.train
