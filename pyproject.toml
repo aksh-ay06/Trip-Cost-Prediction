@@ -17,7 +17,6 @@ dependencies = [
     "uvicorn>=0.32",
     "pydantic>=2.9",
     "dbt-bigquery>=1.8",
-    "pyspark>=3.5",
     "streamlit>=1.38",
     "requests>=2.32",
 ]

@@ -9,7 +9,7 @@ sources:
 
 models:
   - name: stg_taxi_trips
-    description: "Staged taxi trip data from Spark feature engineering output"
+    description: "Staged taxi trip data from the BigQuery feature engineering step (src/processing/features.py)"
     columns:
       - name: fare_amount
         tests:
