@@ -46,7 +46,7 @@ tasks:
       GCP_PROJECT: "{{ vars.gcp_project }}"
       GOOGLE_APPLICATION_CREDENTIALS: /app/keys/my_keys.json
     commands:
-      - python -m src.processing.spark_job
+      - python -m src.processing.features
 
   - id: dbt_run
     type: io.kestra.plugin.scripts.shell.Commands

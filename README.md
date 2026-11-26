@@ -14,7 +14,7 @@ extract.py ──► GCS (parquet)
 load_to_bq.py ──► BigQuery taxi_raw
   │
   ▼
-spark_job.py ──► BigQuery taxi_staging.yellow_trips_processed
+features.py ──► BigQuery taxi_staging.yellow_trips_processed
   │
   ▼
 dbt ──► taxi_staging.stg_taxi_trips ──► taxi_prod.fct_taxi_features
@@ -74,7 +74,7 @@ export GCP_PROJECT=<your-project-id>
 
 uv run python -m src.data.extract
 uv run python -m src.data.load_to_bq
-uv run python -m src.processing.spark_job
+uv run python -m src.processing.features
 cd dbt && dbt deps && dbt run && cd ..
 uv run python -m src.training.train
 ```
@@ -124,7 +124,7 @@ src/
     extract.py           # pull from BQ public dataset → GCS parquet
     load_to_bq.py        # GCS parquet → BQ taxi_raw
   processing/
-    spark_job.py         # feature engineering (BQ SQL)
+    features.py          # feature engineering (BigQuery SQL)
   training/
     train.py             # XGBoost training
     evaluate.py          # model evaluation

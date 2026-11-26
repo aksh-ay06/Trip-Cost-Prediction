@@ -1,7 +1,7 @@
 """Turn an API request into the model's feature row.
 
 The time features must match how training computes them in BigQuery
-(src/processing/spark_job.py):
+(src/processing/features.py):
 
     EXTRACT(HOUR FROM pickup_datetime)       -> pickup_hour (0-23)
     EXTRACT(DAYOFWEEK FROM pickup_datetime)  -> pickup_dayofweek (1=Sunday ... 7=Saturday)
