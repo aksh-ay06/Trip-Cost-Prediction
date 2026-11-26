@@ -26,6 +26,9 @@ override.tf.json
 .terraform.tfstate.lock.info
 .terraformrc
 terraform.rc
+# Plan files embed the full state and provider config
+*.tfplan
+tfplan
 
 # dbt
 dbt/target/
