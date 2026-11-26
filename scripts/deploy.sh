@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_ID="${GCP_PROJECT:-prefab-fabric-479602-c5}"
+PROJECT_ID="${GCP_PROJECT:?Set GCP_PROJECT to your GCP project ID}"
 REGION="${GCP_REGION:-us-central1}"
 REPO="mlops-docker"
 IMAGE="taxi-prediction-api"

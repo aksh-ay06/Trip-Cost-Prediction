@@ -1,14 +1,22 @@
 """Pydantic request/response schemas for the prediction API."""
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
 class TripInput(BaseModel):
-    pickup_hour: int = Field(..., ge=0, le=23, description="Hour of pickup (0-23)")
-    pickup_dayofweek: int = Field(..., ge=1, le=7, description="Day of week (1=Sunday, 7=Saturday)")
-    is_weekend: int = Field(..., ge=0, le=1, description="1 if Saturday or Sunday, 0 otherwise")
+    pickup_datetime: datetime = Field(
+        ...,
+        description=(
+            "Pickup time in ISO 8601, e.g. 2026-03-04T14:30:00. Treated as NYC local "
+            "time unless it includes a UTC offset. Hour, day of week, and the weekend "
+            "flag are derived from it on the server."
+        ),
+        examples=["2026-03-04T14:30:00"],
+    )
     passenger_count: int = Field(..., ge=1, le=9)
-    trip_distance: float = Field(..., gt=0)
+    trip_distance: float = Field(..., gt=0, le=100, description="Trip distance in miles")
 
 
 class PredictionOutput(BaseModel):

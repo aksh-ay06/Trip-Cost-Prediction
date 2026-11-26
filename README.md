@@ -14,7 +14,7 @@ extract.py ──► GCS (parquet)
 load_to_bq.py ──► BigQuery taxi_raw
   │
   ▼
-spark_job.py ──► BigQuery taxi_staging.yellow_trips_processed
+features.py ──► BigQuery taxi_staging.yellow_trips_processed
   │
   ▼
 dbt ──► taxi_staging.stg_taxi_trips ──► taxi_prod.fct_taxi_features
@@ -74,7 +74,7 @@ export GCP_PROJECT=<your-project-id>
 
 uv run python -m src.data.extract
 uv run python -m src.data.load_to_bq
-uv run python -m src.processing.spark_job
+uv run python -m src.processing.features
 cd dbt && dbt deps && dbt run && cd ..
 uv run python -m src.training.train
 ```
@@ -99,14 +99,16 @@ cd terraform && terraform apply
 ```bash
 curl -X POST <CLOUD_RUN_URL>/predict \
   -H "Content-Type: application/json" \
-  -d '{"pickup_hour":14,"pickup_dayofweek":3,"is_weekend":0,"passenger_count":2,"trip_distance":3.5}'
+  -d '{"pickup_datetime":"2026-03-04T14:30:00","passenger_count":2,"trip_distance":3.5}'
 ```
 
-`pickup_dayofweek` uses BigQuery convention: 1 = Sunday, 7 = Saturday.
+`pickup_datetime` is treated as NYC local time unless it includes a UTC offset. The API derives the hour, day of week (BigQuery convention: 1 = Sunday, 7 = Saturday), and weekend flag from it, using the same rules as the training SQL.
 
 ### 6. Kestra (orchestration)
 
 ```bash
+cp .env.example .env
+# fill in GCP_PROJECT, KEYS_DIR (absolute path to your keys folder), and the Kestra/Postgres credentials
 docker compose up -d
 # UI at http://localhost:8080
 ```
@@ -122,7 +124,7 @@ src/
     extract.py           # pull from BQ public dataset → GCS parquet
     load_to_bq.py        # GCS parquet → BQ taxi_raw
   processing/
-    spark_job.py         # feature engineering (BQ SQL)
+    features.py          # feature engineering (BigQuery SQL)
   training/
     train.py             # XGBoost training
     evaluate.py          # model evaluation
@@ -130,6 +132,7 @@ src/
     app.py               # FastAPI endpoints
     model.py             # model loading from GCS
     schemas.py           # request/response schemas
+    features.py          # request -> model features (matches training SQL)
   frontend/
     app.py               # Streamlit UI
 

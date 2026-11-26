@@ -1,10 +1,12 @@
 id: taxi_pipeline
 namespace: mlops
 
+# gcp_project and keys_dir come from the ENV_GCP_PROJECT and ENV_KEYS_DIR
+# variables passed to the Kestra container (see docker-compose.yml and .env).
 variables:
-  gcp_project: prefab-fabric-479602-c5
+  gcp_project: "{{ envs.gcp_project }}"
   docker_image: mlops-pipeline:latest
-  keys_volume: "/media/akshay/DATA/MLops/keys:/app/keys:ro"
+  keys_volume: "{{ envs.keys_dir }}:/app/keys:ro"
 
 tasks:
   - id: extract_data
@@ -44,7 +46,7 @@ tasks:
       GCP_PROJECT: "{{ vars.gcp_project }}"
       GOOGLE_APPLICATION_CREDENTIALS: /app/keys/my_keys.json
     commands:
-      - python -m src.processing.spark_job
+      - python -m src.processing.features
 
   - id: dbt_run
     type: io.kestra.plugin.scripts.shell.Commands

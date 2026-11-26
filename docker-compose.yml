@@ -50,8 +50,11 @@ services:
           server:
             basic-auth:
               enabled: true
-              username: admin@kestra.io
-              password: Admin1234!
+              username: "${KESTRA_ADMIN_USER:?Set KESTRA_ADMIN_USER in .env}"
+              password: "${KESTRA_ADMIN_PASSWORD:?Set KESTRA_ADMIN_PASSWORD in .env}"
+      # Exposed to flows as {{ envs.gcp_project }} and {{ envs.keys_dir }}
+      ENV_GCP_PROJECT: "${GCP_PROJECT:?Set GCP_PROJECT in .env}"
+      ENV_KEYS_DIR: "${KEYS_DIR:?Set KEYS_DIR in .env (absolute host path to the keys folder)}"
     volumes:
       - kestra_data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
