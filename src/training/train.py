@@ -11,27 +11,18 @@ from google.cloud import bigquery, storage
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
-from src.config import ML_ARTIFACTS_BUCKET, PROJECT_ID
+from src.config import FEATURE_TABLE, FEATURES, ML_ARTIFACTS_BUCKET, PROJECT_ID, TARGET
 
 ARTIFACTS_BUCKET = ML_ARTIFACTS_BUCKET
 MODEL_PATH = "models/fare_model.xgb"
 METRICS_PATH = "models/metrics.json"
-
-FEATURES = [
-    "pickup_hour",
-    "pickup_dayofweek",
-    "is_weekend",
-    "passenger_count",
-    "trip_distance",
-]
-TARGET = "fare_amount"
 
 
 def load_data():
     client = bigquery.Client(project=PROJECT_ID)
     query = f"""
     SELECT {', '.join(FEATURES)}, {TARGET}
-    FROM `{PROJECT_ID}.taxi_staging_taxi_prod.fct_taxi_features`
+    FROM `{FEATURE_TABLE}`
     """
     return client.query(query).to_dataframe()
 
