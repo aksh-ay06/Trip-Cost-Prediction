@@ -107,6 +107,8 @@ curl -X POST <CLOUD_RUN_URL>/predict \
 ### 6. Kestra (orchestration)
 
 ```bash
+cp .env.example .env
+# fill in GCP_PROJECT, KEYS_DIR (absolute path to your keys folder), and the Kestra/Postgres credentials
 docker compose up -d
 # UI at http://localhost:8080
 ```
