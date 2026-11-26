@@ -6,9 +6,8 @@ from datetime import date, datetime, time
 import requests
 import streamlit as st
 
-API_URL = os.getenv(
-    "API_URL", "https://taxi-prediction-api-6b5db6zo2q-uc.a.run.app"
-)
+# Set by Terraform on Cloud Run (terraform/cloudrun.tf). Defaults to a local API for development.
+API_URL = os.getenv("API_URL", "http://localhost:8080").rstrip("/")
 
 st.set_page_config(page_title="NYC Taxi Fare Predictor", page_icon="🚕")
 st.title("NYC Taxi Fare Predictor")
