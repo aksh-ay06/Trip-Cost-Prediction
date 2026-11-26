@@ -99,10 +99,10 @@ cd terraform && terraform apply
 ```bash
 curl -X POST <CLOUD_RUN_URL>/predict \
   -H "Content-Type: application/json" \
-  -d '{"pickup_hour":14,"pickup_dayofweek":3,"is_weekend":0,"passenger_count":2,"trip_distance":3.5}'
+  -d '{"pickup_datetime":"2026-03-04T14:30:00","passenger_count":2,"trip_distance":3.5}'
 ```
 
-`pickup_dayofweek` uses BigQuery convention: 1 = Sunday, 7 = Saturday.
+`pickup_datetime` is treated as NYC local time unless it includes a UTC offset. The API derives the hour, day of week (BigQuery convention: 1 = Sunday, 7 = Saturday), and weekend flag from it, using the same rules as the training SQL.
 
 ### 6. Kestra (orchestration)
 
@@ -132,6 +132,7 @@ src/
     app.py               # FastAPI endpoints
     model.py             # model loading from GCS
     schemas.py           # request/response schemas
+    features.py          # request -> model features (matches training SQL)
   frontend/
     app.py               # Streamlit UI
 

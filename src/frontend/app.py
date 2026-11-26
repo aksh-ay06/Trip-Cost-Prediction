@@ -1,6 +1,7 @@
 """Streamlit frontend for NYC Taxi Fare Prediction."""
 
 import os
+from datetime import date, datetime, time
 
 import requests
 import streamlit as st
@@ -12,23 +13,13 @@ API_URL = os.getenv(
 st.set_page_config(page_title="NYC Taxi Fare Predictor", page_icon="🚕")
 st.title("NYC Taxi Fare Predictor")
 
-DAYS = {
-    "Sunday": 1,
-    "Monday": 2,
-    "Tuesday": 3,
-    "Wednesday": 4,
-    "Thursday": 5,
-    "Friday": 6,
-    "Saturday": 7,
-}
-
 col1, col2 = st.columns(2)
 
 with col1:
-    pickup_hour = st.slider("Pickup hour", 0, 23, 14)
-    day_name = st.selectbox("Day of week", list(DAYS.keys()), index=3)
-    pickup_dayofweek = DAYS[day_name]
-    is_weekend = 1 if day_name in ("Sunday", "Saturday") else 0
+    pickup_date = st.date_input("Pickup date", value=date.today())
+    pickup_time = st.time_input("Pickup time (NYC local)", value=time(14, 0))
+    pickup_dt = datetime.combine(pickup_date, pickup_time)
+    is_weekend = pickup_dt.weekday() >= 5
 
 with col2:
     passenger_count = st.number_input("Passengers", min_value=1, max_value=9, value=1)
@@ -41,9 +32,7 @@ if is_weekend:
 
 if st.button("Predict Fare", type="primary", use_container_width=True):
     payload = {
-        "pickup_hour": pickup_hour,
-        "pickup_dayofweek": pickup_dayofweek,
-        "is_weekend": is_weekend,
+        "pickup_datetime": pickup_dt.isoformat(),
         "passenger_count": passenger_count,
         "trip_distance": trip_distance,
     }
